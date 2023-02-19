@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, TouchableOpacity, Text } from "react-native-web";
+import { FlatList} from "react-native-web";
 import { supabase } from './supabaseClient';
 
 import { darkTheme } from '../Theme/Themes';
@@ -8,7 +8,7 @@ import SnackbarSuccess from "../Snackbar/SnackbarSuccess";
 import {ThreeDots} from "react-loader-spinner";
 import Modal from 'react-modal';
 
-
+let selectedProposalVotes = [];
 
 class PendingProjects extends Component {
     snackbarErrorRef = React.createRef();
@@ -23,6 +23,7 @@ class PendingProjects extends Component {
             showLoading: false,
             showProjectModal: false,
             showProposalModal: false,
+            showProposalVoteStateModal: false,
             selectedProjectInModal: {},
             selectedProposalVotes: [],
         };
@@ -78,7 +79,6 @@ class PendingProjects extends Component {
             }
 
             if (data) {
-                console.log(data)
                 this.setState({
                     data: data,
                     dataLoading: false,
@@ -96,8 +96,28 @@ class PendingProjects extends Component {
 
     }
 
-    getProposalVoteState = async (id) => {
+    getProposalVoteState = async (proposition_id) => {
+        // get vote of proposition from votes table in supabase
+        try {
+            let { data, error, status } = await supabase
+                .from('votes')
+                .select(`*`)
+                .eq('proposition_id', proposition_id)
 
+            if (error && status !== 406) {
+                throw error
+            }
+            if (data) {
+                selectedProposalVotes = data;
+                this.setState({
+                    selectedProposalVotes: data,
+                    showProposalVoteStateModal: true,
+                })
+                return data
+            }
+        } catch (error) {
+            alert(error.message)
+        }
     }
 
     openNewTab = (url) => {
@@ -228,31 +248,40 @@ class PendingProjects extends Component {
 
     getColor = (data) => {
         const colorMap = {
-            "": "#FFB3B3", // red
-            "": "#B2FFBA", // green
-            "": "grey", // grey
+            "YAY": "#FFB3B3", // red
+            "NAY": "#B2FFBA", // green
+            "ABSTAIN": "grey", // grey
         }
         return colorMap[data];
     } 
 
     renderProposalVoteState = () => {
-        const voteStateData = this.state.selectedProposalVotes;
+        const voteStateData = selectedProposalVotes;
         const voteStateHTML = [];
         if (voteStateData.length < 1) {
             return [];
         }
-        for (let i = 0; i < voteStateData; i++) {
+        for (let j = 0; j < voteStateData.length; j++) {
+            const data = voteStateData[j];
             voteStateHTML.push(
                 <div className="VerticalFlex vote-state-parent">
                     <div className="vote-state-img-parent" style={{
-                        backgroundColor: `${this.getColor()}` // TODO: GET DATA
-                    }}>
+                            width: "150px", height: "150px", borderRadius: "50%",
+                            backgroundColor: `${this.getColor(data.vote_type)}`
+                        }}>
+                        <img className="vote-state-img"
+                            alt="img"
+                            src={data.profile_image} />
+                    </div>
 
+                    <div>
+                        <p className="vote-state-name">{data.name}</p>
                     </div>
 
                 </div>
             )
         }
+        return voteStateHTML;
     }
 
     openProposalVoteStateModal = () => {
@@ -272,51 +301,20 @@ class PendingProjects extends Component {
               transform: 'translate(-50%, -50%)',
             },
           };
+        const proposalVoteStateHTML = this.renderProposalVoteState();
         return (
             <Modal
-                isOpen={this.state.showProposalModal}
+                isOpen={this.state.showProposalVoteStateModal}
                 // onAfterOpen={afterOpenModal}
                 onRequestClose={() => this.setState({
-                    showProposalModal: false,
+                    showProposalVoteStateModal: false,
                 })}
                 style={customStyles}
                 contentLabel="Project">
 
-                    <div className="VerticalFlex CenterContents">
+                    <div className="VerticalFlex CenterContents VoteStateMainDiv">
 
-
-
-
-                        <div class="vertical-flex">
-
-                            <p className="form-label">Website</p>
-                            <div>
-                                <input className="text-input-name" type="text" id="sitename" name="sitename" maxlength="50"
-                                    placeholder="example.com"/>
-                            </div>
-                            
-
-                        </div>
-
-
-                        <br/>
-                        <br/>
-                        <div class="vertical-flex">
-                            <p className="form-label">Reason</p>
-                            <div>
-                                <textarea id="reason" name="reason" rows="4" maxlength="250"
-                                    className="reason-text-area"
-                                    placeholder="Explain reason here"></textarea>
-                            </div>
-                            
-                        </div>
-
-                        <br/>
-                        <br/>
-
-                        <div className="primary-button"  
-                            onClick={()=> this.applyVote("yay", this.state.selectedProjectInModal)}>Propose Boycott</div>
-                                
+                        {proposalVoteStateHTML}
                     </div>
             </Modal>
         )
@@ -513,14 +511,15 @@ class PendingProjects extends Component {
                         
                     </div>
 
-                    <div className="PendingProjectInformationItem">
+                    <div className="PendingProjectInformationItemName">
                         <p className="PendingProjectNameText" 
                             onClick={()=> this.onProjectClick(item)}>
                             {item.creator} on {item.website_name}</p>
                     </div>
 
                     <div className="PendingProjectInformationItem">
-                        <p className="PendingDescriptionText">
+                        <p className="PendingDescriptionText votes-state"
+                            onClick={()=> this.getProposalVoteState(item.id)}>
                             {item.votes}/9</p>
                     </div>
 
@@ -542,7 +541,7 @@ class PendingProjects extends Component {
                 <br />
                 <br />
                 <br />
-                <h2 className="title-text-vote"> Awaiting Your Vote</h2>
+                <h2 className="title-text-vote"> Propositions</h2>
                 <br />
                 <SnackbarError ref = {this.snackbarErrorRef} />
                 <SnackbarSuccess ref = {this.snackbarSuccessRef} />
@@ -575,6 +574,7 @@ class PendingProjects extends Component {
 
                 {this.openProjectModal()}
                 {this.openProposalModal()}
+                {this.openProposalVoteStateModal()}
                 
             </div>
         );

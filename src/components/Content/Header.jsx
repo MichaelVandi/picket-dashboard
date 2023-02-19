@@ -5,9 +5,7 @@ const Header = ({key, user}) => {
   return <header className={`${s.header} headerDiv centerRow`}>
     <div className="centerRow">
         <img src={process.env.PUBLIC_URL + '/img/logo.png'} alt="logo" className="logo-header" />
-      <h1>Picket</h1>
-      <Search />
-      <img src={process.env.PUBLIC_URL + "/img/notification.svg"} alt="notification icon" className={s.notification} />
+        <h1>Picket</h1>
     </div>
     <div className={`${s.userRow} centerRow user-header`}>
       <p className="username-header">{user.creator_name}</p>

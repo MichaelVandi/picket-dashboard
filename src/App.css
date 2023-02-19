@@ -190,13 +190,53 @@
     color: #9773FF;
     transition: 0.3s all ease;
 }
+.PendingProjectInformationItemName {
+    padding-left: 15px;
+    padding-right: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* outline: 1px solid black; */
+    width: 400px;
+}
+.vote-state-name {
+    font-weight: bold;
+    padding-top: 10px;
+}
+.VoteStateMainDiv {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.vote-state-parent {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.vote-state-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+.votes-state:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    transition: 0.3s all ease;
+}
 .PendingProjectInformationItem {
     padding-left: 15px;
     padding-right: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    /* border: 1px solid white; */
+    width: 200px;
     /* min-width: 200px */
 }
 .PendingProjectsList {
