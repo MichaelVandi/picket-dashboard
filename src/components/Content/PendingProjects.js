@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import { FlatList, TouchableOpacity, Text } from "react-native-web";
-import { fmsUrl } from '../../globalVariables';
 import { supabase } from './supabaseClient';
 
 import { darkTheme } from '../Theme/Themes';
-import { FaTwitter, FaDiscord } from "react-icons/fa";
-import { GrInstagram } from "react-icons/gr"
-import { FiLink } from "react-icons/fi"
 import SnackbarError from "../Snackbar/SnackbarError";
 import SnackbarSuccess from "../Snackbar/SnackbarSuccess";
 import {ThreeDots} from "react-loader-spinner";
 import Modal from 'react-modal';
+
+
 
 class PendingProjects extends Component {
     snackbarErrorRef = React.createRef();
@@ -26,12 +24,14 @@ class PendingProjects extends Component {
             showProjectModal: false,
             showProposalModal: false,
             selectedProjectInModal: {},
+            selectedProposalVotes: [],
         };
     }
 
     componentDidMount() {
         this.getPendingVotes();
     }
+
 
     handleItemDescription = (desc) => {
         if (desc == null || !desc) {
@@ -96,6 +96,10 @@ class PendingProjects extends Component {
 
     }
 
+    getProposalVoteState = async (id) => {
+
+    }
+
     openNewTab = (url) => {
         window.open(url, '_blank');
     }
@@ -119,7 +123,11 @@ class PendingProjects extends Component {
         })
     }
 
-    proposeBoycott = () => {
+    capitalize = (s) => {
+        return s[0].toUpperCase() + s.slice(1);
+    }
+
+    proposeBoycott = async () => {
         // Get website and reason
         const siteName = document.getElementById("sitename");
         const reason = document.getElementById("reason");
@@ -135,9 +143,48 @@ class PendingProjects extends Component {
             this._showSnackbarErrorHandler("Reason cannot be empty");
             return;
         }
+        const siteTitle = String(siteName.value).split(".").slice(-2, -1)[0];
         // All good proceed
+        await this.addProposition(
+            this.state.user.creator_name,
+            this.capitalize(siteTitle),
+            siteName.value,
+            this.state.user.profile_image,
+            reason.value,
+        )
 
 
+    }
+
+    addProposition = async (creator_name, website_name, website_url, profile_image, description) => {
+        try {
+
+            let { data, error, status } = await supabase
+
+                .from('propositions')
+                .insert([
+                    {
+                        creator: creator_name,
+                        website_name: website_name,
+                        website_url: website_url,
+                        votes: 0,
+                        profile_image: profile_image,
+                        description: description,
+                        yays: 0,
+                    }
+                ])
+
+            if (error && status !== 406) {
+                throw error
+            }
+            
+            console.log("Proposition added (probably) (data doesn't return anything): ", data)
+            document.location.reload();
+
+
+        } catch (error) {
+            alert(error.message)
+        }
     }
 
     applyVote = async (type, data) => {
@@ -177,6 +224,102 @@ class PendingProjects extends Component {
         } catch (error) {
             console.error(error.message)
         }
+    }
+
+    getColor = (data) => {
+        const colorMap = {
+            "": "#FFB3B3", // red
+            "": "#B2FFBA", // green
+            "": "grey", // grey
+        }
+        return colorMap[data];
+    } 
+
+    renderProposalVoteState = () => {
+        const voteStateData = this.state.selectedProposalVotes;
+        const voteStateHTML = [];
+        if (voteStateData.length < 1) {
+            return [];
+        }
+        for (let i = 0; i < voteStateData; i++) {
+            voteStateHTML.push(
+                <div className="VerticalFlex vote-state-parent">
+                    <div className="vote-state-img-parent" style={{
+                        backgroundColor: `${this.getColor()}` // TODO: GET DATA
+                    }}>
+
+                    </div>
+
+                </div>
+            )
+        }
+    }
+
+    openProposalVoteStateModal = () => {
+        const customStyles = {
+            content: {
+              top: '50%',
+              left: '50%',
+              right: 'auto',
+              bottom: 'auto',
+              marginRight: '-50%',
+              height: "fit-content",
+              width: "80vw",
+              overflowY: "scroll",
+              padding: "30px",
+              backgroundColor: "#F1F1F1",
+              borderRadius: "25px",
+              transform: 'translate(-50%, -50%)',
+            },
+          };
+        return (
+            <Modal
+                isOpen={this.state.showProposalModal}
+                // onAfterOpen={afterOpenModal}
+                onRequestClose={() => this.setState({
+                    showProposalModal: false,
+                })}
+                style={customStyles}
+                contentLabel="Project">
+
+                    <div className="VerticalFlex CenterContents">
+
+
+
+
+                        <div class="vertical-flex">
+
+                            <p className="form-label">Website</p>
+                            <div>
+                                <input className="text-input-name" type="text" id="sitename" name="sitename" maxlength="50"
+                                    placeholder="example.com"/>
+                            </div>
+                            
+
+                        </div>
+
+
+                        <br/>
+                        <br/>
+                        <div class="vertical-flex">
+                            <p className="form-label">Reason</p>
+                            <div>
+                                <textarea id="reason" name="reason" rows="4" maxlength="250"
+                                    className="reason-text-area"
+                                    placeholder="Explain reason here"></textarea>
+                            </div>
+                            
+                        </div>
+
+                        <br/>
+                        <br/>
+
+                        <div className="primary-button"  
+                            onClick={()=> this.applyVote("yay", this.state.selectedProjectInModal)}>Propose Boycott</div>
+                                
+                    </div>
+            </Modal>
+        )
     }
 
     openProposalModal = () => {
@@ -237,7 +380,7 @@ class PendingProjects extends Component {
                         <br/>
 
                         <div className="primary-button"  
-                            onClick={()=> this.applyVote("yay", this.state.selectedProjectInModal)}>Propose Boycott</div>
+                            onClick={()=> this.proposeBoycott()}>Propose Boycott</div>
                                 
                     </div>
             </Modal>

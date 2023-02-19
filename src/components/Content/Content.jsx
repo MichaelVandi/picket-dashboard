@@ -8,6 +8,42 @@ import {getAuth, signInWithCustomToken,
 import {apiUrl} from '../../globalVariables';
 import React, { Component } from 'react';
 
+const exampleUsers = [
+    {
+        creator_name: "Amandeep Gill",
+        profile_image: "https://i.imgur.com/znTSW0U.png"
+    },
+    {
+        creator_name: "Hugo Roy",
+        profile_image: "https://i.imgur.com/PzWYuF2.png"
+    },
+    {
+        creator_name: "Arvind Narayanan",
+        profile_image: "https://i.imgur.com/lcZUJt3.png"
+    },
+    {
+        creator_name: "J. Trevor Hughes",
+        profile_image: "https://i.imgur.com/yj4Y2J1.png"
+    },
+    {
+        creator_name: "Shannon Scribner",
+        profile_image: "https://i.imgur.com/CEsmq1C.png"
+    },
+    {
+        creator_name: "Francesca Rossi",
+        profile_image: "https://i.imgur.com/lYo90ka.png"
+    },
+    {
+        creator_name: "Frances Haugen",
+        profile_image: "https://i.imgur.com/YUxpdRg.png",
+    },
+    {
+        creator_name: "Vincent Conitzer",
+        profile_image: "https://i.imgur.com/onKS07A.png"
+    }
+]
+
+
 class Content extends Component {
     constructor(props) {
         super(props);
@@ -18,7 +54,7 @@ class Content extends Component {
             errorText: "",
             signUpLoading: true,
             renderLogin: false,
-            user: {},
+            user: exampleUsers[Math.floor(Math.random() * exampleUsers.length)],
         };
     }
 

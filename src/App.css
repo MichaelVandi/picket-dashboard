@@ -4,6 +4,25 @@
   background-color: #F0E4F3;
   height: 100vh;
 }
+.user-profile {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+.username-header {
+    font-weight: bold;
+    margin-right: 10px;
+}
+.user-header {
+    margin-right: 40px;
+}
+.profile-parent-div {
+    background-color: #9773FF;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+
+}
 
 .FullParentWidth {
     width: 100%;
