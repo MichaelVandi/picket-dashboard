@@ -21,11 +21,10 @@ const Sidebar = () => {
         <GlobalStyles />
         <div className={s.fixed}>
           <div>
-            <NavLink to="/home" onClick={(e) => disabled(e)} activeClassName={s.active}><HomeIcon /></NavLink>
+            <NavLink to="/home" onClick={(e) => disabled(e)} activeClassName={s.active}></NavLink>
            
-            <NavLink to="/settings" onClick={(e) => disabled(e)} activeClassName={s.active}><SettingsIcon /></NavLink>
+            <NavLink to="/settings" onClick={(e) => disabled(e)} activeClassName={s.active}></NavLink>
           </div>
-          <Toggle theme={theme} toggleTheme={themeToggler} />
         </div>
       </>
     </ThemeProvider>

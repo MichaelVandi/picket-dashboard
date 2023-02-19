@@ -24,6 +24,7 @@ class PendingProjects extends Component {
             user: user,
             showLoading: false,
             showProjectModal: false,
+            showProposalModal: false,
             selectedProjectInModal: {},
         };
     }
@@ -99,117 +100,6 @@ class PendingProjects extends Component {
         window.open(url, '_blank');
     }
 
-    renderSocials = (data) => {
-
-        return (
-            <div className={`HorizontalFlex
-            CenterContentsVerticalInHorizontalFlex`}>
-                {data.twitterUrl && (
-                    <div className="SocialIconItemContainer"
-                        onClick={() => this.openNewTab(data.twitterUrl)}>
-                    <FaTwitter
-                        color={darkTheme.socials}
-                        size="1.2em" />
-                    </div>
-                )}
-                
-                {data.discordUrl && (
-                    <div className="SocialIconItemContainer"
-                        onClick={() => this.openNewTab(data.discordUrl)}>
-                    <FaDiscord
-                        color={darkTheme.socials}
-                        size="1.3em" />
-                    </div>
-                )}
-                
-                {data.instagramUrl && (
-                    <div className="SocialIconItemContainer"
-                        onClick={() => this.openNewTab(data.instagramUrl)}>
-                        <GrInstagram
-                            color={darkTheme.socials}
-                            size="1.1em" />
-                    </div>
-                )}
-                
-                {data.projectWebsite && (
-                    <div className="SocialIconItemContainer"
-                        onClick={() => this.openNewTab(data.projectWebsite)}>
-                        <FiLink
-                            color={darkTheme.socials}
-                            size="1.1em" />
-                    </div>
-                )}
-                
-            </div>
-        );
-    };
-
-    onApproveClick = (documentId) => {
-        // alert(documentId)
-        this.setState({
-            showLoading: true,
-        });
-        const uid = this.state.user.uid;
-        const approveUrl = new URL(fmsUrl + "/api/admin/approveproject");
-        const data = {
-            userId: uid,
-            documentId: documentId,
-        };
-
-        fetch(approveUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        }).then((response) => response.json())
-            .then((response) => {
-                if (response.metadata.result &&
-                    response.metadata.result === "success") {
-                    
-                    let message = "Approved Successfully!";
-                    if (response.metadata.but) {
-                        message += " But " + response.metadata.but;
-                    }
-
-                    this.setState({
-                        showLoading: false,
-                    });
-
-                    this._showSnackbarSuccessHandler(message);
-                    // Refresh Pending projects
-                    this.getPendingVotes();
-                } else {
-                    let message = "Failed Approval! ";
-                    if (response.metadata.because) {
-                        message += response.metadata.because;
-                    }
-
-                    this.setState({
-                        showLoading: false,
-                    });
-
-                    this._showSnackbarErrorHandler(message);
-                }
-            }).catch((error) => {
-                // TODO: Log this error
-                this.setState({
-                    showLoading: false,
-                });
-                console.error(error);
-                this._showSnackbarErrorHandler(
-                    "Approval Failed! " + JSON.stringify(error),
-                );
-            });
-
-    }
-
-    onDenyClick = (documentId) => {
-        alert("Are you sure you want to deny this project?");
-        // const uid = this.state.user.uid;
-        this._showSnackbarErrorHandler("Denied");
-    }
-
     _showSnackbarErrorHandler = (message) => {
         this.snackbarErrorRef.current.openSnackBar(message);
     };
@@ -221,6 +111,33 @@ class PendingProjects extends Component {
             selectedProjectInModal: project,
             showProjectModal: true,
         })
+    }
+
+    onHandRaiseClick = () => {
+        this.setState({
+            showProposalModal: true,
+        })
+    }
+
+    proposeBoycott = () => {
+        // Get website and reason
+        const siteName = document.getElementById("sitename");
+        const reason = document.getElementById("reason");
+
+        if (!siteName.value.length || siteName.value.length < 1) {
+            // siteName cannot be empty
+            this._showSnackbarErrorHandler("Website name cannot be empty");
+            return;
+        }
+
+        if (!reason.value.length || reason.value.length < 1) {
+            // reason cannot  empty
+            this._showSnackbarErrorHandler("Reason cannot be empty");
+            return;
+        }
+        // All good proceed
+
+
     }
 
     applyVote = async (type, data) => {
@@ -261,6 +178,72 @@ class PendingProjects extends Component {
             console.error(error.message)
         }
     }
+
+    openProposalModal = () => {
+        const customStyles = {
+            content: {
+              top: '50%',
+              left: '50%',
+              right: 'auto',
+              bottom: 'auto',
+              marginRight: '-50%',
+              height: "fit-content",
+              width: "fit-content",
+              overflowY: "scroll",
+              padding: "30px",
+              backgroundColor: "#F1F1F1",
+              borderRadius: "25px",
+              transform: 'translate(-50%, -50%)',
+            },
+          };
+        return (
+            <Modal
+                isOpen={this.state.showProposalModal}
+                // onAfterOpen={afterOpenModal}
+                onRequestClose={() => this.setState({
+                    showProposalModal: false,
+                })}
+                style={customStyles}
+                contentLabel="Project">
+
+                    <div className="VerticalFlex CenterContents">
+
+
+                        <div class="vertical-flex">
+
+                            <p className="form-label">Website</p>
+                            <div>
+                                <input className="text-input-name" type="text" id="sitename" name="sitename" maxlength="50"
+                                    placeholder="example.com"/>
+                            </div>
+                            
+
+                        </div>
+
+
+                        <br/>
+                        <br/>
+                        <div class="vertical-flex">
+                            <p className="form-label">Reason</p>
+                            <div>
+                                <textarea id="reason" name="reason" rows="4" maxlength="250"
+                                    className="reason-text-area"
+                                    placeholder="Explain reason here"></textarea>
+                            </div>
+                            
+                        </div>
+
+                        <br/>
+                        <br/>
+
+                        <div className="primary-button"  
+                            onClick={()=> this.applyVote("yay", this.state.selectedProjectInModal)}>Propose Boycott</div>
+                                
+                    </div>
+            </Modal>
+        )
+    }
+
     openProjectModal = () => {
         const customStyles = {
             content: {
@@ -322,14 +305,6 @@ class PendingProjects extends Component {
                                     onClick={()=> this.applyVote("abstain", this.state.selectedProjectInModal)}>ABSTAIN</div>
                                 <div className="primary-button"
                                     onClick={()=> this.applyVote("nay", this.state.selectedProjectInModal)}>NAY</div>
-                            </div>
-
-                            <div>
-                                {/* Label and reason */}
-                            </div>
-
-                            <div>
-                                {/* Button */}
                             </div>
 
                             <div>
@@ -450,7 +425,13 @@ class PendingProjects extends Component {
                     />
                 </div>
 
+                <div className="hand-outline-div"
+                    onClick={()=> this.onHandRaiseClick()}>
+                    <img src={process.env.PUBLIC_URL + '/img/hand_outline.png'} alt="hand-outline" className="hand-outline" />
+                </div>
+
                 {this.openProjectModal()}
+                {this.openProposalModal()}
                 
             </div>
         );
