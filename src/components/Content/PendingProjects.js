@@ -187,10 +187,10 @@ class PendingProjects extends Component {
                         creator: creator_name,
                         website_name: website_name,
                         website_url: website_url,
-                        votes: 0,
+                        votes: 1,
                         profile_image: profile_image,
                         description: description,
-                        yays: 0,
+                        yays: 1,
                     }
                 ])
 
