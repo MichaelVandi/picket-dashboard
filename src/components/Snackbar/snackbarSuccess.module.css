@@ -1,0 +1,63 @@
+.snackbar {
+    visibility: hidden;
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: fixed;
+    z-index: 1;
+    top: 70px;
+    /* border: 1px solid white; */
+  }
+  .ActualSnackBarSuccess {
+    border-left: 7px solid #00C4B4;
+    /* border-right: 7px solid #202225;
+    background-color: #202225; */
+    border-right: 7px solid #525252;
+    background-color: #525252;
+    text-align: left;
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 8px;
+    padding: 12px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 17px;
+    letter-spacing: 0.4px;
+  }
+  .SnackbarIcon {
+      padding-left: 10px;
+      padding-right: 10px;
+  }
+  
+  .snackbar.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
+   However, delay the fade out process for 2.5 seconds */
+   -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+   animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+  
+  /* Animations to fade the snackbar in and out */
+  @-webkit-keyframes fadein {
+    from {top: 0; opacity: 0;} 
+    to {top: 70px; opacity: 1;}
+  }
+  
+  @keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 70px; opacity: 1;}
+  }
+  
+  @-webkit-keyframes fadeout {
+    from {bottom: 70px; opacity: 1;} 
+    to {top: 0; opacity: 0;}
+  }
+  
+  @keyframes fadeout {
+    from {top: 70px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+  }

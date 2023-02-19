@@ -1,0 +1,77 @@
+.sidebar {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.fixed {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 98px;
+}
+
+.logo {
+  width: 50px;
+  height: auto;
+  margin-top: 40px;
+}
+
+.sidebarIcon {
+  padding: 5px;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.sidebarIcon.settings {
+  margin-bottom: 0;
+}
+
+.sidebarIcon.selected::before {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: -32px;
+  width: 4.5px;
+  height: 50px;
+  background: #7f7fd5;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.themeButton {
+  margin-bottom: 46px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  width: 60px;
+  height: 30px;
+  background: #fdfdff;
+  box-sizing: border-box;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.themeButton:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.5px #4f4f4f;
+}
+
+.lightThemeCircle {
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #7f7fd5;
+  border-radius: 50px;
+}
+
+.darkThemeCircle {
+  width: 10px;
+  height: 10px;
+  border: 5px solid #e9e9e9;
+  border-radius: 50%;
+}

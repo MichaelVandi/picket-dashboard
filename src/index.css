@@ -1,0 +1,58 @@
+h1,
+h2,
+p,
+span {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: "Gilroy";
+  font-weight: 400;
+}
+.headerDiv {
+    background-color: white;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 30px;
+    z-index: 9999;
+
+}
+.main-content {
+    background-color: #F0E4F3;
+    width: 100vh;
+    height: 100vh;
+    border: 1px solid black;
+}
+.background-color {
+    background-color: #F0E4F3;
+}
+.logo-header {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.flex {
+  display: flex;
+}
+
+.centerRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.cardTitle {
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 24px;
+}
